@@ -4,7 +4,7 @@ import timber.log.Timber
 
 data class Grid(
     val size: GridSize = GridSize.Normal,
-    private val grid: Array<IntArray> = Array(size.count) { IntArray(size.count) {0} }
+    val grid: Array<IntArray> = Array(size.count) { IntArray(size.count) {0} }
 ) {
 
     operator fun get(rowIndex: Int, columnIndex: Int) = grid[rowIndex][columnIndex]

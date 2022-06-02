@@ -55,6 +55,8 @@ dependencies {
     implementation compose.ui
     implementation compose.preview
     implementation compose.material
+    implementation compose.viewmodel
+
     androidTestImplementation compose.ui_test
     debugImplementation compose.ui_test_manifest
     debugImplementation compose.tooling

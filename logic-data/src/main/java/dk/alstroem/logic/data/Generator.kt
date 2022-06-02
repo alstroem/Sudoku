@@ -4,8 +4,11 @@ class Generator {
 
     private lateinit var grid: Grid
 
-    fun generate(level: Level): Grid {
-        grid = Grid()
+    fun generate(
+        grid: Grid,
+        level: Level
+    ): Grid {
+        this.grid = grid
         fillGrid()
         removeDigits(level)
         grid.print()

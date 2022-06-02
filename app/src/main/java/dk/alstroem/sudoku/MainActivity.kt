@@ -20,26 +20,11 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SudokuTheme {
-                Generator().generate(Level.Easy)
-
                 // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    Greeting("Android")
+                Surface(modifier = Modifier, color = MaterialTheme.colorScheme.background) {
+                    GridScreen(modifier = Modifier.fillMaxSize())
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    SudokuTheme {
-        Greeting("Android")
     }
 }

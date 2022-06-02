@@ -26,6 +26,7 @@ ext {
     ]
 
     compose_material_version = '1.0.0-alpha11'
+    compose_viewmodel_version = '2.4.1'
     compose = [
             material : "androidx.compose.material3:material3:$compose_material_version",
             preview : "androidx.compose.ui:ui-tooling-preview:$compose_version",
@@ -33,6 +34,7 @@ ext {
             ui : "androidx.compose.ui:ui:$compose_version",
             ui_test : "androidx.compose.ui:ui-test-junit4:$compose_version",
             ui_test_manifest : "androidx.compose.ui:ui-test-manifest:$compose_version",
+            viewmodel : "androidx.lifecycle:lifecycle-viewmodel-compose:$compose_viewmodel_version"
     ]
 
     junit_version = '4.13.2'
