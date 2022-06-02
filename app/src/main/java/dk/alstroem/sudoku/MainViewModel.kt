@@ -22,9 +22,8 @@ class MainViewModel: ViewModel() {
 
     private fun generateGrid() {
         viewModelScope.launch {
-            val grid = uiState.grid
             val data = withContext(Dispatchers.IO) {
-                Generator().generate(grid, Level.Medium)
+                Generator().generate(Level.Medium)
             }
 
             uiState = uiState.copy(grid = data)

@@ -1,7 +1,7 @@
 package dk.alstroem.logic.data
 
 sealed class Level(val providedDigits: Int) {
-    object Easy : Level(25)
-    object Medium : Level(20)
-    object Hard : Level(17)
+    object Easy : Level(30)
+    object Medium : Level(25)
+    object Hard : Level(21)
 }

@@ -25,7 +25,7 @@ fun Cell(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = value.toString(),
+            text = if (value > 0) value.toString() else "",
             style = MaterialTheme.typography.titleLarge,
             color = Color.Black
         )
