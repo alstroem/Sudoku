@@ -26,7 +26,8 @@ fun Cell(
     ) {
         Text(
             text = value.toString(),
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.titleLarge,
+            color = Color.Black
         )
     }
 }

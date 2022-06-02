@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dk.alstroem.logic.data.Generator
 import dk.alstroem.logic.data.Level
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainViewModel: ViewModel() {
 
@@ -20,7 +22,11 @@ class MainViewModel: ViewModel() {
 
     private fun generateGrid() {
         viewModelScope.launch {
-            val data = Generator().generate(uiState.grid, Level.Medium)
+            val grid = uiState.grid
+            val data = withContext(Dispatchers.IO) {
+                Generator().generate(grid, Level.Medium)
+            }
+
             uiState = uiState.copy(grid = data)
         }
     }
