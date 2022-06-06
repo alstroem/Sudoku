@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dk.alstroem.logic.data.Grid
 import dk.alstroem.logic.data.GridSize
+import dk.alstroem.sudoku.model.SelectedCell
 import dk.alstroem.sudoku.ui.theme.SudokuTheme
 
 @Composable
@@ -23,21 +24,32 @@ fun GridScreen(
     val uiState = viewModel.uiState
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        SudokuGrid(data = uiState.grid, modifier = Modifier
-            .background(Color.Gray)
-            .padding(4.dp))
+        SudokuGrid(
+            data = uiState.grid,
+            modifier = Modifier
+                .background(Color.Gray)
+                .padding(4.dp),
+            selectedCell = uiState.selectedCell,
+            onSelected = { row, column -> viewModel.selectCell(row, column) }
+        )
     }
 }
 
 @Composable
 fun SudokuGrid(
     data: Grid,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    selectedCell: SelectedCell = SelectedCell(-1, -1),
+    onSelected: ((Int, Int) -> Unit)? = null
 ) {
     CustomGrid(size = data.size, modifier = modifier) {
         for (row in data.size.indexRange) {
             for (column in data.size.indexRange) {
-                Cell(data = data[row, column])
+                Cell(
+                    data = data[row, column],
+                    onSelected = onSelected,
+                    isSelected = row == selectedCell.row && column == selectedCell.column
+                )
             }
         }
     }

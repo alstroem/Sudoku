@@ -1,6 +1,7 @@
 package dk.alstroem.sudoku
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
@@ -17,12 +18,15 @@ import dk.alstroem.sudoku.ui.theme.SudokuTheme
 @Composable
 fun Cell(
     data: GridCell,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isSelected: Boolean = false,
+    onSelected: ((Int, Int) -> Unit)? = null
 ) {
     Box(
         modifier = modifier
             .size(40.dp)
-            .background(Color.White),
+            .background(if (isSelected) Color.LightGray else Color.White)
+            .clickable { onSelected?.invoke(data.row, data.column) },
         contentAlignment = Alignment.Center
     ) {
         Text(
