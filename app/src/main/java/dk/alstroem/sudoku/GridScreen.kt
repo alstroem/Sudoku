@@ -2,6 +2,7 @@ package dk.alstroem.sudoku
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,7 +23,9 @@ fun GridScreen(
     val uiState = viewModel.uiState
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        SudokuGrid(data = uiState.grid, modifier = Modifier.background(Color.LightGray).padding(4.dp))
+        SudokuGrid(data = uiState.grid, modifier = Modifier
+            .background(Color.LightGray)
+            .padding(4.dp))
     }
 }
 
@@ -32,10 +35,11 @@ fun SudokuGrid(
     modifier: Modifier = Modifier
 ) {
     CustomGrid(size = data.size.count, modifier = modifier) {
-        data.grid.flatMap { it.asIterable() }
-            .forEach {
-                Cell(value = it)
+        for (row in data.size.indexRange) {
+            for (column in data.size.indexRange) {
+                Cell(value = data[row, column].value)
             }
+        }
     }
 }
 

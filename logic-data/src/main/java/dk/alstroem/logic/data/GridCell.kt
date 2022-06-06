@@ -1,0 +1,8 @@
+package dk.alstroem.logic.data
+
+data class GridCell(
+    val row: Int = -1,
+    val column: Int = -1,
+    val value: Int = 0,
+    val selected: Boolean = false
+)

@@ -4,11 +4,11 @@ import timber.log.Timber
 
 data class Grid(
     val size: GridSize = GridSize.Normal,
-    val grid: Array<IntArray> = Array(size.count) { IntArray(size.count) {0} }
+    val grid: Array<Array<GridCell>> = Array(size.count) { Array(size.count) { GridCell() } }
 ) {
 
     operator fun get(rowIndex: Int, columnIndex: Int) = grid[rowIndex][columnIndex]
-    operator fun set(rowIndex: Int, columnIndex: Int, value: Int) {
+    operator fun set(rowIndex: Int, columnIndex: Int, value: GridCell) {
         grid[rowIndex][columnIndex] = value
     }
 
@@ -29,15 +29,13 @@ data class Grid(
 
         other as Grid
 
-        if (size != other.size) return false
         if (!grid.contentDeepEquals(other.grid)) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = size.hashCode()
-        result = 31 * result + grid.contentDeepHashCode()
-        return result
+        return grid.contentDeepHashCode()
     }
+
 }

@@ -12,14 +12,14 @@ object Solver {
     private fun solve(): Boolean {
         for (row in grid.size.indexRange) {
             for (column in grid.size.indexRange) {
-                if (grid[row, column] == 0) {
+                if (grid[row, column].value == 0) {
                     val availableDigits = getAvailableDigits(row, column)
                     for (digit in availableDigits) {
-                        grid[row, column] = digit
+                        grid[row, column] = GridCell(row, column, digit)
                         if (solve()) {
                             return true
                         }
-                        grid[row, column] = 0
+                        grid[row, column] = GridCell(row, column, 0)
                     }
                     return false
                 }
@@ -70,7 +70,7 @@ object Solver {
     }
 
     private fun MutableList<Int>.removeBlockIfUsed(row: Int, column: Int) {
-        val block = grid[row, column]
+        val block = grid[row, column].value
         if (block != 0) {
             remove(block)
         }
