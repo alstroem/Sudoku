@@ -2,7 +2,6 @@ package dk.alstroem.sudoku
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dk.alstroem.logic.data.Grid
+import dk.alstroem.logic.data.GridSize
 import dk.alstroem.sudoku.ui.theme.SudokuTheme
 
 @Composable
@@ -24,7 +24,7 @@ fun GridScreen(
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         SudokuGrid(data = uiState.grid, modifier = Modifier
-            .background(Color.LightGray)
+            .background(Color.Gray)
             .padding(4.dp))
     }
 }
@@ -34,10 +34,10 @@ fun SudokuGrid(
     data: Grid,
     modifier: Modifier = Modifier
 ) {
-    CustomGrid(size = data.size.count, modifier = modifier) {
+    CustomGrid(size = data.size, modifier = modifier) {
         for (row in data.size.indexRange) {
             for (column in data.size.indexRange) {
-                Cell(value = data[row, column].value)
+                Cell(data = data[row, column])
             }
         }
     }
@@ -45,7 +45,7 @@ fun SudokuGrid(
 
 @Composable
 fun CustomGrid(
-    size: Int,
+    size: GridSize,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
@@ -58,35 +58,44 @@ fun CustomGrid(
             measurable.measure(constraints)
         }
 
-        val columnHeights = Array(size) { 0 }
-        val columnWidths = Array(size) { 0 }
-        val padding = 2.dp.roundToPx()
-        placeables.forEachIndexed { index, placeable ->
-            val row = index / size
-            columnWidths[row] += placeable.width + padding
+        val cellHeights = Array(size.count) { 0 }
+        val cellWidths = Array(size.count) { 0 }
 
-            val column = index % size
-            columnHeights[column] += placeable.height + padding
+        val padding = 1.dp.roundToPx()
+        val middlePadding = 4.dp.roundToPx()
+
+        placeables.forEachIndexed { index, placeable ->
+            val row = index / size.count
+            val column = index % size.count
+
+            val verticalPadding = if (column.plus(1) % size.nonetSize == 0) middlePadding else padding
+            val horizontalPadding = if (row.plus(1) % size.nonetSize == 0) middlePadding else padding
+
+            cellWidths[row] += placeable.width + verticalPadding
+            cellHeights[column] += placeable.height + horizontalPadding
         }
 
-        val width = (columnWidths.maxOrNull()?.minus(padding) ?: constraints.minWidth).coerceAtMost(constraints.maxWidth)
-        val height = (columnHeights.maxOrNull()?.minus(padding) ?: constraints.minHeight).coerceAtMost(constraints.maxHeight)
+        val width = (cellWidths.maxOrNull()?.minus(middlePadding) ?: constraints.minWidth).coerceAtMost(constraints.maxWidth)
+        val height = (cellHeights.maxOrNull()?.minus(middlePadding) ?: constraints.minHeight).coerceAtMost(constraints.maxHeight)
 
         layout(width, height) {
-            val columnX = Array(size) { 0 }
-            val columnY = Array(size) { 0 }
+            val cellX = Array(size.count) { 0 }
+            val cellY = Array(size.count) { 0 }
 
             placeables.forEachIndexed { index, placeable ->
-                val row = index / size
-                val column = index % size
+                val row = index / size.count
+                val column = index % size.count
+
+                val verticalPadding = if (column.plus(1) % size.nonetSize == 0) middlePadding else padding
+                val horizontalPadding = if (row.plus(1) % size.nonetSize == 0) middlePadding else padding
 
                 placeable.placeRelative(
-                    x = columnX[row],
-                    y = columnY[column]
+                    x = cellX[row],
+                    y = cellY[column]
                 )
 
-                columnX[row] += placeable.width + padding
-                columnY[column] += placeable.height + padding
+                cellX[row] += placeable.width + verticalPadding
+                cellY[column] += placeable.height + horizontalPadding
             }
         }
     }

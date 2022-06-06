@@ -29,4 +29,9 @@ class MainViewModel: ViewModel() {
             uiState = uiState.copy(grid = data)
         }
     }
+
+    fun selectCell(row: Int, column: Int) {
+        val cell = uiState.grid[row, column].copy(selected = true)
+        
+    }
 }

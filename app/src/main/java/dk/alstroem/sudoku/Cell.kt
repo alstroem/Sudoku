@@ -11,11 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dk.alstroem.logic.data.GridCell
 import dk.alstroem.sudoku.ui.theme.SudokuTheme
 
 @Composable
 fun Cell(
-    value: Int,
+    data: GridCell,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -25,7 +26,7 @@ fun Cell(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = if (value > 0) value.toString() else "",
+            text = if (data.value > 0) data.value.toString() else "",
             style = MaterialTheme.typography.titleLarge,
             color = Color.Black
         )
@@ -36,6 +37,6 @@ fun Cell(
 @Composable
 fun CellPreview() {
     SudokuTheme {
-        Cell(value = 0)
+        Cell(data = GridCell())
     }
 }

@@ -9,6 +9,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import dk.alstroem.logic.data.Generator
 import dk.alstroem.logic.data.Level
@@ -21,7 +22,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SudokuTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier, color = MaterialTheme.colorScheme.background) {
+                Surface(modifier = Modifier, color = Color.White) {
                     GridScreen(modifier = Modifier.fillMaxSize())
                 }
             }
