@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SudokuTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier, color = Color.White) {
+                Surface(modifier = Modifier, color = MaterialTheme.colorScheme.background) {
                     GridScreen(modifier = Modifier.fillMaxSize())
                 }
             }

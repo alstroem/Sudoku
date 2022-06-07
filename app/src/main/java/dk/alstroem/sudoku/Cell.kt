@@ -22,18 +22,29 @@ fun Cell(
     isSelected: Boolean = false,
     onSelected: ((Int, Int) -> Unit)? = null
 ) {
+    val color = getBackgroundColor(hasValue = data.value > 0, isSelected = isSelected)
+
     Box(
         modifier = modifier
             .size(40.dp)
-            .background(if (isSelected) Color.LightGray else Color.White)
-            .clickable { onSelected?.invoke(data.row, data.column) },
+            .background(color)
+            .clickable(enabled = data.value == 0) { onSelected?.invoke(data.row, data.column) },
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = if (data.value > 0) data.value.toString() else "",
             style = MaterialTheme.typography.titleLarge,
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onBackground
         )
+    }
+}
+
+@Composable
+private fun getBackgroundColor(hasValue: Boolean, isSelected: Boolean): Color {
+    return when {
+        hasValue -> MaterialTheme.colorScheme.primaryContainer
+        isSelected -> MaterialTheme.colorScheme.tertiaryContainer
+        else -> MaterialTheme.colorScheme.background
     }
 }
 

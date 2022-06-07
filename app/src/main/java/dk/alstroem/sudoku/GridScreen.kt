@@ -3,6 +3,7 @@ package dk.alstroem.sudoku
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +28,7 @@ fun GridScreen(
         SudokuGrid(
             data = uiState.grid,
             modifier = Modifier
-                .background(Color.Gray)
+                .background(MaterialTheme.colorScheme.primary)
                 .padding(4.dp),
             selectedCell = uiState.selectedCell,
             onSelected = { row, column -> viewModel.selectCell(row, column) }
