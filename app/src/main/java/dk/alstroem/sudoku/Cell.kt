@@ -33,7 +33,7 @@ fun Cell(
     ) {
         Text(
             text = if (data.value > 0) data.value.toString() else "",
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onBackground
         )
     }
