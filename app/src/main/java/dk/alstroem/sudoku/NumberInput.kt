@@ -26,7 +26,9 @@ import dk.alstroem.sudoku.ui.theme.SudokuTheme
 @Composable
 fun NumberInput(
     size: GridSize,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNumberSelected: (Int) -> Unit,
+    onNumberDeleted: () -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(5),
@@ -38,22 +40,26 @@ fun NumberInput(
             .background(MaterialTheme.colorScheme.primary)
     ) {
         items(size.valueRange.toList()) { item ->
-            NumberCell(value = item)
+            NumberCell(
+                value = item,
+                onClick = onNumberSelected
+            )
         }
-        item { NumberErase() }
+        item { NumberErase(onClick = onNumberDeleted) }
     }
 }
 
 @Composable
 fun NumberCell(
     value: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: (Int) -> Unit
 ) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier.size(52.dp)
             .background(MaterialTheme.colorScheme.background)
-            .clickable {  }
+            .clickable { onClick(value) }
     ) {
         Text(
             text = value.toString(),
@@ -64,14 +70,17 @@ fun NumberCell(
 }
 
 @Composable
-fun NumberErase(modifier: Modifier = Modifier) {
+fun NumberErase(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
     Image(
         painter = painterResource(id = R.drawable.number_erase),
         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
         contentDescription = "Number erase button",
         modifier = modifier.size(52.dp)
             .background(MaterialTheme.colorScheme.background)
-            .clickable {  }
+            .clickable { onClick() }
             .padding(8.dp)
     )
 }
@@ -80,7 +89,11 @@ fun NumberErase(modifier: Modifier = Modifier) {
 @Composable
 fun NumberInputPreview() {
     SudokuTheme {
-        NumberInput(size = GridSize.Normal)
+        NumberInput(
+            size = GridSize.Normal,
+            onNumberSelected = {},
+            onNumberDeleted = {}
+        )
     }
 }
 
@@ -88,6 +101,6 @@ fun NumberInputPreview() {
 @Composable
 fun NumberCellPreview() {
     SudokuTheme {
-        NumberCell(value = 1)
+        NumberCell(value = 1) { }
     }
 }

@@ -16,6 +16,7 @@ import dk.alstroem.logic.data.Grid
 import dk.alstroem.logic.data.GridSize
 import dk.alstroem.sudoku.model.SelectedCell
 import dk.alstroem.sudoku.ui.theme.SudokuTheme
+import timber.log.Timber
 
 @Composable
 fun GridScreen(
@@ -35,7 +36,11 @@ fun GridScreen(
                 onSelected = { row, column -> viewModel.selectCell(row, column) }
             )
 
-            NumberInput(size = uiState.grid.size)
+            NumberInput(
+                size = uiState.grid.size,
+                onNumberSelected = { viewModel.addNumber(it) },
+                onNumberDeleted = { viewModel.clearNumber() }
+            )
         }
     }
 }
@@ -45,7 +50,7 @@ fun SudokuGrid(
     data: Grid,
     modifier: Modifier = Modifier,
     selectedCell: SelectedCell = SelectedCell(-1, -1),
-    onSelected: ((Int, Int) -> Unit)? = null
+    onSelected: (Int, Int) -> Unit
 ) {
     CustomGrid(size = data.size, modifier = modifier) {
         for (row in data.size.indexRange) {
@@ -122,6 +127,6 @@ fun CustomGrid(
 @Composable
 fun GridPreview() {
     SudokuTheme {
-        SudokuGrid(data = Grid())
+        SudokuGrid(data = Grid()) { _, _ -> Timber.d("Cell clicked") }
     }
 }

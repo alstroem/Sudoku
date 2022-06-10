@@ -28,12 +28,12 @@ class Generator {
             for (column in grid.size.nonetRange) {
                 do {
                     generatedDigit = getRandomValue(grid.size.minValue, grid.size.maxValue)
-                } while (!isUnusedInNonet(rowStart, columnStart, generatedDigit))
+                } while (!grid.isUnusedInNonet(rowStart, columnStart, generatedDigit))
 
                 val rowIndex = rowStart + row
                 val columnIndex = columnStart + column
 
-                grid[rowIndex, columnIndex] = GridCell(rowIndex, columnIndex, generatedDigit)
+                grid[rowIndex, columnIndex] = GridCell(rowIndex, columnIndex, generatedDigit, true)
             }
         }
     }
@@ -73,56 +73,16 @@ class Generator {
         }
 
         for (digit in grid.size.valueRange) {
-            if (isUnused(row, column, digit)) {
-                grid[row, column] = GridCell(row, column, digit)
+            if (grid.isUnused(row, column, digit)) {
+                grid[row, column] = GridCell(row, column, digit, true)
                 if (fillRemainingNonets(row, column + 1)) {
                     return true
                 }
-                grid[row, column] = GridCell(row, column, 0)
+                grid[row, column] = GridCell(row, column, 0, false)
             }
         }
 
         return false
-    }
-
-    private fun isUnused(row: Int, column: Int, digit: Int): Boolean {
-        val rowStart = getBoxStart(row)
-        val columnStart = getBoxStart(column)
-        return isUnusedInNonet(rowStart, columnStart, digit)
-                && isUnusedInRow(row, digit)
-                && isUnusedInColumn(column, digit)
-    }
-
-    private fun getBoxStart(index: Int) = index - index % grid.size.nonetSize
-
-    private fun isUnusedInNonet(rowStart: Int, columnStart: Int, digit: Int): Boolean {
-        for (row in grid.size.nonetRange) {
-            for (column in grid.size.nonetRange) {
-                if (grid[rowStart + row, columnStart + column].value == digit) {
-                    return false
-                }
-            }
-        }
-
-        return true
-    }
-
-    private fun isUnusedInRow(row: Int, digit: Int): Boolean {
-        for (column in grid.size.indexRange) {
-            if (grid[row, column].value == digit) {
-                return false
-            }
-        }
-        return true
-    }
-
-    private fun isUnusedInColumn(column: Int, digit: Int): Boolean {
-        for (row in grid.size.indexRange) {
-            if (grid[row, column].value == digit) {
-                return false
-            }
-        }
-        return true
     }
 
     private fun removeDigits(level: Level) {
@@ -134,7 +94,7 @@ class Generator {
 
             if (grid[randomRow, randomColumn].value != 0) {
                 val digitToRemove = grid[randomRow, randomColumn]
-                grid[randomRow, randomColumn] = GridCell(randomRow, randomColumn, 0)
+                grid[randomRow, randomColumn] = GridCell(randomRow, randomColumn, 0, false)
                 if (!Solver.isSolvable(grid)) {
                     grid[randomRow, randomColumn] = digitToRemove
                 } else {
