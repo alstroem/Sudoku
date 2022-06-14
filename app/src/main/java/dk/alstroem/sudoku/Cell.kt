@@ -3,6 +3,8 @@ package dk.alstroem.sudoku
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,12 +34,35 @@ fun Cell(
             .clickable(enabled = !data.isGenerated) { onSelected(data.row, data.column) },
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = data.value.takeIf { it > 0 }?.toString() ?: "",
-            style = MaterialTheme.typography.headlineSmall,
-            color = if (data.error) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onBackground
-        )
+
+        if (data.value > 0) {
+            Text(
+                text = data.value.toString(),
+                style = MaterialTheme.typography.headlineSmall,
+                color = if (data.error) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onBackground
+            )
+        } else {
+            data.candidates.forEach {
+                Candidate(
+                    value = it,
+                    modifier = Modifier.align(getCandidateAlignment(it))
+                )
+            }
+        }
     }
+}
+
+@Composable
+fun Candidate(
+    value: Int,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = value.toString(),
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onBackground,
+        modifier = modifier.padding(start = 2.dp, end = 2.dp)
+    )
 }
 
 @Composable
@@ -47,6 +72,21 @@ private fun getBackgroundColor(data: GridCell, isSelected: Boolean): Color {
         isSelected -> MaterialTheme.colorScheme.tertiaryContainer
         data.error -> MaterialTheme.colorScheme.errorContainer
         else -> MaterialTheme.colorScheme.background
+    }
+}
+
+private fun getCandidateAlignment(value: Int): Alignment {
+    return when (value) {
+        1 -> Alignment.TopStart
+        2 -> Alignment.TopCenter
+        3 -> Alignment.TopEnd
+        4 -> Alignment.CenterStart
+        5 -> Alignment.Center
+        6 -> Alignment.CenterEnd
+        7 -> Alignment.BottomStart
+        8 -> Alignment.BottomCenter
+        9 -> Alignment.BottomEnd
+        else -> throw IllegalArgumentException()
     }
 }
 

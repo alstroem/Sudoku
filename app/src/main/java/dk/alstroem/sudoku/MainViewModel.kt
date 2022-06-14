@@ -45,7 +45,7 @@ class MainViewModel: ViewModel() {
         uiState = uiState.copy(selectedCell = selectedCell)
     }
 
-    fun addNumber(number: Int) {
+    fun addInput(number: Int) {
         val grid = uiState.grid.copy()
         val row = uiState.selectedCell.row
         val column = uiState.selectedCell.column
@@ -53,11 +53,32 @@ class MainViewModel: ViewModel() {
         uiState = uiState.copy(grid = grid)
     }
 
-    fun clearNumber() {
+    fun clearInput() {
         val grid = uiState.grid.copy()
         val row = uiState.selectedCell.row
         val column = uiState.selectedCell.column
         grid[row, column] = grid[row, column].copy(value = 0, error = false)
+        uiState = uiState.copy(grid = grid)
+    }
+
+    fun addCandidate(number: Int) {
+        val grid = uiState.grid.copy()
+        val row = uiState.selectedCell.row
+        val column = uiState.selectedCell.column
+        val cell = grid[row, column]
+        val candidates = if (cell.candidates.contains(number)) {
+            cell.candidates.minusElement(number)
+        } else cell.candidates.plusElement(number)
+
+        grid[row, column] = cell.copy(candidates = candidates)
+        uiState = uiState.copy(grid = grid)
+    }
+
+    fun clearCandidates() {
+        val grid = uiState.grid.copy()
+        val row = uiState.selectedCell.row
+        val column = uiState.selectedCell.column
+        grid[row, column] = grid[row, column].copy(candidates = emptySet())
         uiState = uiState.copy(grid = grid)
     }
 }

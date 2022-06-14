@@ -6,5 +6,6 @@ data class GridCell(
     val value: Int = 0,
     val isGenerated: Boolean = false,
     val selected: Boolean = false,
-    val error: Boolean = false
+    val error: Boolean = false,
+    val candidates: Set<Int> = emptySet()
 )

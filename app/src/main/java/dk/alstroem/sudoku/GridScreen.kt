@@ -3,8 +3,11 @@ package dk.alstroem.sudoku
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +28,7 @@ fun GridScreen(
 ) {
     val uiState = viewModel.uiState
 
-    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+    Box(modifier = modifier, contentAlignment = Alignment.BottomCenter) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             SudokuGrid(
                 data = uiState.grid,
@@ -36,11 +39,25 @@ fun GridScreen(
                 onSelected = { row, column -> viewModel.selectCell(row, column) }
             )
 
+            Spacer(modifier = Modifier.size(16.dp))
+            Text(text = "Input", style = MaterialTheme.typography.bodyLarge)
             NumberInput(
                 size = uiState.grid.size,
-                onNumberSelected = { viewModel.addNumber(it) },
-                onNumberDeleted = { viewModel.clearNumber() }
+                textStyle = MaterialTheme.typography.headlineMedium,
+                onNumberSelected = { viewModel.addInput(it) },
+                onNumberDeleted = { viewModel.clearInput() }
             )
+
+            Spacer(modifier = Modifier.size(16.dp))
+            Text(text = "Candidates", style = MaterialTheme.typography.bodyLarge)
+            NumberInput(
+                size = uiState.grid.size,
+                textStyle = MaterialTheme.typography.titleMedium,
+                onNumberSelected = { viewModel.addCandidate(it) },
+                onNumberDeleted = { viewModel.clearCandidates() }
+            )
+
+            Spacer(modifier = Modifier.size(16.dp))
         }
     }
 }
