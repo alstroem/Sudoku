@@ -28,8 +28,8 @@ object Solver {
         return true
     }
 
-    private fun getAvailableDigits(row: Int, column: Int): List<Int> {
-        val availableDigits = mutableListOf<Int>()
+    private fun getAvailableDigits(row: Int, column: Int): Iterable<Int> {
+        val availableDigits = mutableSetOf<Int>()
         availableDigits.addAll(grid.size.valueRange)
 
         availableDigits.truncateByDigitsUsedInRow(row)
@@ -41,22 +41,22 @@ object Solver {
             availableDigits.truncateByDigitsUsedInBox(row, column)
         }
 
-        return availableDigits.toList()
+        return availableDigits.asIterable()
     }
 
-    private fun MutableList<Int>.truncateByDigitsUsedInRow(row: Int) {
+    private fun MutableSet<Int>.truncateByDigitsUsedInRow(row: Int) {
         for (column in grid.size.indexRange) {
             removeBlockIfUsed(row, column)
         }
     }
 
-    private fun MutableList<Int>.truncateByDigitsUsedInColumn(column: Int) {
+    private fun MutableSet<Int>.truncateByDigitsUsedInColumn(column: Int) {
         for (row in grid.size.indexRange) {
             removeBlockIfUsed(row, column)
         }
     }
 
-    private fun MutableList<Int>.truncateByDigitsUsedInBox(row: Int, column: Int) {
+    private fun MutableSet<Int>.truncateByDigitsUsedInBox(row: Int, column: Int) {
         val rowStart = getBoxStart(row)
         val rowEnd = getBoxEnd(rowStart)
         val columnStart = getBoxStart(column)
@@ -69,7 +69,7 @@ object Solver {
         }
     }
 
-    private fun MutableList<Int>.removeBlockIfUsed(row: Int, column: Int) {
+    private fun MutableSet<Int>.removeBlockIfUsed(row: Int, column: Int) {
         val block = grid[row, column].value
         if (block != 0) {
             remove(block)
