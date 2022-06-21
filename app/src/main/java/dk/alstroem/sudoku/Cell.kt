@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dk.alstroem.logic.data.CellCandidates
 import dk.alstroem.logic.data.GridCell
 import dk.alstroem.sudoku.ui.theme.SudokuTheme
 import timber.log.Timber
@@ -21,7 +22,9 @@ import timber.log.Timber
 @Composable
 fun Cell(
     data: GridCell,
+    candidates: CellCandidates,
     modifier: Modifier = Modifier,
+    showAutoCandidates: Boolean = false,
     isSelected: Boolean = false,
     onSelected: ((Int, Int) -> Unit)
 ) {
@@ -42,10 +45,24 @@ fun Cell(
                 color = if (data.error) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onBackground
             )
         } else {
-            data.candidates.forEach {
+            CandidatesGrid(
+                candidates = if (showAutoCandidates) candidates.autoCandidates else candidates.userCandidates
+            )
+        }
+    }
+}
+
+@Composable
+fun CandidatesGrid(
+    candidates: Map<Int, Boolean>,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier.fillMaxSize()) {
+        candidates.forEach {
+            if (it.value) {
                 Candidate(
-                    value = it,
-                    modifier = Modifier.align(getCandidateAlignment(it))
+                    value = it.key,
+                    modifier = Modifier.align(getCandidateAlignment(it.key))
                 )
             }
         }
@@ -94,6 +111,6 @@ private fun getCandidateAlignment(value: Int): Alignment {
 @Composable
 fun CellPreview() {
     SudokuTheme {
-        Cell(data = GridCell()) { _, _ -> Timber.d("Cell clicked") }
+        Cell(data = GridCell(), candidates = CellCandidates()) { _, _ -> Timber.d("Cell clicked") }
     }
 }

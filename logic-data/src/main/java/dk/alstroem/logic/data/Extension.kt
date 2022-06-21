@@ -8,7 +8,7 @@ fun Grid.isUnused(row: Int, column: Int, value: Int): Boolean {
             && isUnusedInColumn(column, value)
 }
 
-private fun GridSize.getNonetStart(index: Int) = index - index % nonetSize
+fun GridSize.getNonetStart(index: Int) = index - index % nonetSize
 
 fun Grid.isUnusedInNonet(rowStart: Int, columnStart: Int, digit: Int): Boolean {
     for (row in size.nonetRange) {

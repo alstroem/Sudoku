@@ -8,6 +8,7 @@ class Generator {
         grid = Grid()
         fillGrid()
         removeDigits(level)
+        addAutoCandidates()
         return grid
     }
 
@@ -99,6 +100,23 @@ class Generator {
                     grid[randomRow, randomColumn] = digitToRemove
                 } else {
                     digitsToRemove --
+                }
+            }
+        }
+    }
+
+    private fun addAutoCandidates() {
+        for (row in grid.size.indexRange) {
+            for (column in grid.size.indexRange) {
+                if (grid[row, column].value == 0) {
+                    val candidates = mutableMapOf<Int, Boolean>()
+                    for (digit in grid.size.valueRange) {
+                        if (grid.isUnused(row, column, digit)) {
+                            candidates[digit] = true
+                        }
+                    }
+
+                    grid.candidates[row][column] = CellCandidates(autoCandidates = candidates)
                 }
             }
         }

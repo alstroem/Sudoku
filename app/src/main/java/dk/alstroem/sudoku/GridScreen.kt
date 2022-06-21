@@ -36,7 +36,8 @@ fun GridScreen(
                     .background(MaterialTheme.colorScheme.primary)
                     .padding(4.dp),
                 selectedCell = uiState.selectedCell,
-                onSelected = { row, column -> viewModel.selectCell(row, column) }
+                onSelected = { row, column -> viewModel.selectCell(row, column) },
+                showAutoCandidates = uiState.showAutoCandidates
             )
 
             Spacer(modifier = Modifier.size(16.dp))
@@ -57,7 +58,14 @@ fun GridScreen(
                 onNumberDeleted = { viewModel.clearCandidates() }
             )
 
+            Spacer(modifier = Modifier.size(8.dp))
+            AutoCandidatesSelection(
+                selected = viewModel.uiState.showAutoCandidates,
+                onSelectionChanged = { viewModel.showAutoCandidates(it) }
+            )
+
             Spacer(modifier = Modifier.size(16.dp))
+
         }
     }
 }
@@ -67,15 +75,18 @@ fun SudokuGrid(
     data: Grid,
     modifier: Modifier = Modifier,
     selectedCell: SelectedCell = SelectedCell(-1, -1),
-    onSelected: (Int, Int) -> Unit
+    onSelected: (Int, Int) -> Unit,
+    showAutoCandidates: Boolean = false
 ) {
     CustomGrid(size = data.size, modifier = modifier) {
         for (row in data.size.indexRange) {
             for (column in data.size.indexRange) {
                 Cell(
                     data = data[row, column],
-                    onSelected = onSelected,
-                    isSelected = row == selectedCell.row && column == selectedCell.column
+                    candidates = data.candidates[row][column],
+                    showAutoCandidates = showAutoCandidates,
+                    isSelected = row == selectedCell.row && column == selectedCell.column,
+                    onSelected = onSelected
                 )
             }
         }
@@ -144,6 +155,6 @@ fun CustomGrid(
 @Composable
 fun GridPreview() {
     SudokuTheme {
-        SudokuGrid(data = Grid()) { _, _ -> Timber.d("Cell clicked") }
+        SudokuGrid(data = Grid(), onSelected = { _, _ -> Timber.d("Cell clicked") })
     }
 }

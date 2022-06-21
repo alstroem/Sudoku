@@ -6,7 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dk.alstroem.logic.data.Generator
+import dk.alstroem.logic.data.Grid
 import dk.alstroem.logic.data.Level
+import dk.alstroem.logic.data.getNonetStart
 import dk.alstroem.logic.data.isUnused
 import dk.alstroem.sudoku.model.GridUiState
 import dk.alstroem.sudoku.model.SelectedCell
@@ -36,49 +38,128 @@ class MainViewModel: ViewModel() {
     }
 
     fun selectCell(row: Int, column: Int) {
-        val selectedCell = uiState.selectedCell.let {
-            if (it.row == row && it.column == column) {
-                SelectedCell(-1, -1)
-            } else SelectedCell(row, column)
-        }
+        viewModelScope.launch {
+            val selectedCell = uiState.selectedCell.let {
+                if (it.row == row && it.column == column) {
+                    SelectedCell(-1, -1)
+                } else SelectedCell(row, column)
+            }
 
-        uiState = uiState.copy(selectedCell = selectedCell)
+            uiState = uiState.copy(selectedCell = selectedCell)
+        }
     }
 
     fun addInput(number: Int) {
-        val grid = uiState.grid.copy()
-        val row = uiState.selectedCell.row
-        val column = uiState.selectedCell.column
-        grid[row, column] = grid[row, column].copy(value = number, error = !grid.isUnused(row, column, number))
-        uiState = uiState.copy(grid = grid)
+        viewModelScope.launch {
+            val grid = withContext(Dispatchers.IO) {
+                uiState.grid.copy().apply {
+                    val row = uiState.selectedCell.row
+                    val column = uiState.selectedCell.column
+                    this[row, column] = this[row, column].copy(value = number, error = !isUnused(row, column, number))
+                    updateAutoCandidates(row, column, number, false)
+                }
+            }
+
+            uiState = uiState.copy(grid = grid)
+        }
     }
 
     fun clearInput() {
-        val grid = uiState.grid.copy()
-        val row = uiState.selectedCell.row
-        val column = uiState.selectedCell.column
-        grid[row, column] = grid[row, column].copy(value = 0, error = false)
-        uiState = uiState.copy(grid = grid)
+        viewModelScope.launch {
+            val grid = withContext(Dispatchers.IO) {
+                uiState.grid.copy().apply {
+                    val row = uiState.selectedCell.row
+                    val column = uiState.selectedCell.column
+                    val cell = this[row, column]
+                    this[row, column] = cell.copy(value = 0, error = false)
+                    updateAutoCandidates(row, column, cell.value, true)
+                }
+            }
+
+            uiState = uiState.copy(grid = grid)
+        }
+    }
+
+    fun showAutoCandidates(selected: Boolean) {
+        uiState = uiState.copy(showAutoCandidates = selected)
     }
 
     fun addCandidate(number: Int) {
-        val grid = uiState.grid.copy()
-        val row = uiState.selectedCell.row
-        val column = uiState.selectedCell.column
-        val cell = grid[row, column]
-        val candidates = if (cell.candidates.contains(number)) {
-            cell.candidates.minusElement(number)
-        } else cell.candidates.plusElement(number)
+        viewModelScope.launch {
+            val grid = withContext(Dispatchers.IO) {
+                uiState.grid.copy().apply {
+                    val row = uiState.selectedCell.row
+                    val column = uiState.selectedCell.column
+                    val cellCandidates = candidates[row][column]
 
-        grid[row, column] = cell.copy(candidates = candidates)
-        uiState = uiState.copy(grid = grid)
+                    val selectedCandidates = if (uiState.showAutoCandidates) cellCandidates.autoCandidates else cellCandidates.userCandidates
+                    val newCandidates = if (selectedCandidates.contains(number)) {
+                        selectedCandidates.minus(number)
+                    } else selectedCandidates.plus(number to true)
+
+                    candidates[row][column] = if (uiState.showAutoCandidates) {
+                        cellCandidates.copy(autoCandidates = newCandidates)
+                    } else cellCandidates.copy(userCandidates = newCandidates)
+                }
+            }
+
+            uiState = uiState.copy(grid = grid)
+        }
     }
 
     fun clearCandidates() {
-        val grid = uiState.grid.copy()
-        val row = uiState.selectedCell.row
-        val column = uiState.selectedCell.column
-        grid[row, column] = grid[row, column].copy(candidates = emptySet())
-        uiState = uiState.copy(grid = grid)
+        viewModelScope.launch {
+            val grid = withContext(Dispatchers.IO) {
+                uiState.grid.copy().apply {
+                    val row = uiState.selectedCell.row
+                    val column = uiState.selectedCell.column
+
+                    candidates[row][column] = if (uiState.showAutoCandidates) {
+                        candidates[row][column].copy(autoCandidates = emptyMap())
+                    } else {
+                        candidates[row][column].copy(userCandidates = emptyMap())
+                    }
+                }
+            }
+
+            uiState = uiState.copy(grid = grid)
+        }
+    }
+
+    private fun Grid.updateAutoCandidates(row: Int, column: Int, digit: Int, display: Boolean) {
+        val nonetRowStart = size.getNonetStart(row)
+        val nonetColumnStart = size.getNonetStart(column)
+        updateAutoCandidatesInNonet(nonetRowStart, nonetColumnStart, digit, display)
+        updateAutoCandidatesInRow(row, digit, display)
+        updateAutoCandidatesInColumn(column, digit, display)
+    }
+
+    private fun Grid.updateAutoCandidatesInNonet(rowStart: Int, columnStart: Int, digit: Int, display: Boolean) {
+        for (row in size.nonetRange) {
+            for (column in size.nonetRange) {
+                if (candidates[rowStart + row][columnStart + column].autoCandidates.contains(digit)) {
+                    val autoCandidates = candidates[rowStart + row][columnStart + column].autoCandidates.plus(digit to display)
+                    candidates[rowStart + row][columnStart + column] = candidates[rowStart + row][columnStart + column].copy(autoCandidates = autoCandidates)
+                }
+            }
+        }
+    }
+
+    private fun Grid.updateAutoCandidatesInRow(row: Int, digit: Int, display: Boolean) {
+        for (column in size.indexRange) {
+            if (candidates[row][column].autoCandidates.contains(digit)) {
+                val autoCandidates = candidates[row][column].autoCandidates.plus(digit to display)
+                candidates[row][column] = candidates[row][column].copy(autoCandidates = autoCandidates)
+            }
+        }
+    }
+
+    private fun Grid.updateAutoCandidatesInColumn(column: Int, digit: Int, display: Boolean) {
+        for (row in size.indexRange) {
+            if (candidates[row][column].autoCandidates.contains(digit)) {
+                val autoCandidates = candidates[row][column].autoCandidates.plus(digit to display)
+                candidates[row][column] = candidates[row][column].copy(autoCandidates = autoCandidates)
+            }
+        }
     }
 }
