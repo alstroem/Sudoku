@@ -20,6 +20,15 @@ data class Grid(
         }
     }
 
+    fun isCompleted(): Boolean {
+        for (row in size.indexRange) {
+            if (grid[row].any { it.error || it.value != 0 }) {
+                return false
+            }
+        }
+        return true
+    }
+
     fun copy(): Grid {
         return Grid(size, grid.map { it.copyOf() }.toTypedArray(), candidates.map { it.copyOf() }.toTypedArray())
     }

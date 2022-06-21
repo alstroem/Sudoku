@@ -15,6 +15,7 @@ import dk.alstroem.sudoku.model.SelectedCell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class MainViewModel: ViewModel() {
 
@@ -104,6 +105,10 @@ class MainViewModel: ViewModel() {
             }
 
             uiState = uiState.copy(grid = grid)
+
+            withContext(Dispatchers.IO) {
+                if (grid.isCompleted()) Timber.d("Grid is completed!")
+            }
         }
     }
 
